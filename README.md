@@ -26,7 +26,7 @@ This project requires Node.js to run the backend API server.
 2. **Install dependencies:**
 
    ```bash
-   npm install
+   npm install rss-parser
 Start the server:
 
 Bash
