@@ -1,0 +1,237 @@
+
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecoblog</title>
+    
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Pi SDK -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <script> Pi.init( { version: "2.0", sandbox: true }); </script>
+    
+    <!-- 🎨 [CSS 영역] 스타일 코드를 <style> 태그 안에 묶었습니다 -->
+    <style>
+        .network {
+            margin-top: -100px;
+            width: 1008px;
+            height: 150vh;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .network::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            
+            background: linear-gradient(135deg, #f0f9ff 0%, #bae6fd 100%); 
+            
+            /* background-color: #e0f2fe; */
+            
+            opacity: 1; /* 배경이 선명하게 보이도록 투명도 복구 */
+            z-index: -1;
+        }
+
+        .network > h1 {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            color: rgb(190, 0, 90);
+            font-size: 25px;
+            line-height: 1.2;
+            font-weight: bold;
+            margin-top: -100px;
+            margin-bottom: 5px;
+        }
+
+        .network > h2 {
+            display: block;
+            width: 100%;
+            color: rgb(0, 100, 0);
+            font-size: 20px;
+            line-height: 1.4;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* 블로그 보드 메인 */
+        .blog-board {
+            width: 600px;
+            height: 700px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+            box-sizing: border-box;
+        }
+
+        /* 프레임 설정 */
+        .blog-frame {
+            width: 100%;
+            height: 650px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* 스크롤바 디자인 */
+        .blog-frame::-webkit-scrollbar { width: 6px; }
+        .blog-frame::-webkit-scrollbar-thumb {
+            background: #5d2b8e;
+            border-radius: 10px;
+        }
+
+        .blog-item {
+            display: block;
+            background: rgba(248, 249, 250, 0.2);
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            color: #333;
+            transition: 0.1s;
+            border-left: 5px solid #5d2b8e;
+            text-decoration: none; /* 밑줄 제거 */
+        }
+
+        .blog-item:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .blog-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .blog-date {
+            font-size: 14px;
+            color: #5d2b8e;
+            font-weight: bold;
+        }
+
+        .blog-title {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
+        @media (max-width:800px) {
+            .network {
+                margin-top: 20px;
+                width: 100%;
+                height: 110vh;
+                padding: 0 20px;
+            }
+            .network::before {
+                background-position: center;   
+                background-size: cover;        
+                opacity: 0.6;
+            }
+            .network > h1, .network > h2 {
+                position: relative;
+                z-index: 1;
+                width: 100%;
+                word-break: keep-all;
+            }
+            .network > h1 {
+                font-size: clamp(12px, 4vw, 20px);
+                margin-top: 50px;
+            }
+            .network > h2 {
+                font-size: clamp(12px, 3vw, 20px);
+                margin: 0px;
+            }
+            .blog-board {
+                width: 100%;
+                padding: 2px 2px;
+                margin-top: 10px;
+            }
+            .blog-frame { height: 650px; }
+            .blog-date { font-size: 8px; }
+            .blog-title { font-size: 10px; }
+            .blog-item {
+                height: 70px;
+                overflow: hidden;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 🏗️ [HTML 구조 영역] -->
+    <div id="Ecosystem" class="network">
+        <h1 data-lang="eco_main_title">최근 파이 네트워크 소식</h1>
+        <h2 data-lang="eco_sub_title">Pi 공식블러그 소식: 파이오니어가 만든 커뮤니티 앱</h2>
+
+        <div class="blog-board">
+            <h3>📢 Pi Network Official Blog</h3>
+            <div class="blog-frame">
+                <div id="pi-blog-container">
+                    <p style="font-size: 10px; text-align: center;" data-lang="eco_loading">소식을 가져오는 중...</p>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <!-- ⚙️ [JS 영역] 스크립트 코드를 <script> 태그 안에 묶어 바디 맨 끝에 배치했습니다 -->
+    <script>
+        // ==========================================================================
+		// 🚀 [아랑 패치] 생태계 블로그 RSS 자체 API 연동 영역 (끊김 방지 완결본)
+		// ==========================================================================
+		$(function() {
+			async function fetchPiBlog() {
+				// 🚨 남의 무료 서버 주소를 지우고, 사장님의 백엔드 API 주소로 교체!
+				const apiUrl = '/api/pi-blog';
+
+				try {
+					const response = await fetch(apiUrl);
+					if (!response.ok) throw new Error("백엔드 서버 응답 불량"); 
+					
+					const data = await response.json();
+
+					// 프론트엔드 렌더링 로직은 기존과 100% 동일하게 유지합니다.
+					if (data.status === 'ok') {
+						let html = '';
+						data.items.slice(0, 10).forEach(item => {
+							const date = new Date(item.pubDate).toLocaleDateString();
+							html += `
+								<a href="${item.link}" target="_blank" class="blog-item">
+									<div class="blog-info">
+										<div class="blog-date"> ${date}</div>
+										<div class="blog-title">${item.title}</div>
+									</div>
+								</a>
+							`;
+						});
+						$('#pi-blog-container').html(html);
+					}
+				} catch (e) {
+					console.warn("⚠️ RSS 피드 로딩 실패:", e.message);
+					$('#pi-blog-container').html("<p style='font-size:12px; color:red; text-align:center;'>로딩 실패</p>");
+				}
+			}
+			
+			if(document.getElementById('pi-blog-container')) {
+				fetchPiBlog();
+			}
+		});
+    </script>
+</body>
+</html>
